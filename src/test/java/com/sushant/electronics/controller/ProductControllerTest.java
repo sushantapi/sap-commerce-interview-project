@@ -8,6 +8,9 @@ import com.sushant.electronics.facade.ProductFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -99,6 +102,29 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$[0].code").value("IPHONE-15"));
 
         verify(productFacade).getAllProducts();
+    }
+
+    @Test
+    void searchProducts_shouldReturnPagedResults() throws Exception {
+        ProductData product = productData(1L, "IPHONE-15", "iPhone 15");
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+
+        when(productFacade.searchProducts(eq("iphone"), any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(product), pageable, 1));
+
+        mockMvc.perform(get("/api/products/search")
+                        .param("query", "iphone")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "name,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].code").value("IPHONE-15"))
+                .andExpect(jsonPath("$.content[0].name").value("iPhone 15"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
+
+        verify(productFacade).searchProducts(eq("iphone"), any(PageRequest.class));
     }
 
     @Test
