@@ -4,7 +4,9 @@ import com.sushant.electronics.dao.ProductDao;
 import com.sushant.electronics.entity.Product;
 import com.sushant.electronics.exception.DuplicateProductException;
 import com.sushant.electronics.exception.ProductNotFoundException;
+import com.sushant.electronics.search.ProductIndexEvent;
 import com.sushant.electronics.service.ProductService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,12 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductDao productDao;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProductServiceImpl(ProductDao productDao) {
+    public ProductServiceImpl(ProductDao productDao,
+                              ApplicationEventPublisher eventPublisher) {
         this.productDao = productDao;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -28,7 +33,9 @@ public class ProductServiceImpl implements ProductService {
             throw new DuplicateProductException(
                     "Product already exists with code: " + product.getCode());
         }
-        return productDao.save(product);
+        Product savedProduct = productDao.save(product);
+        eventPublisher.publishEvent(ProductIndexEvent.index(savedProduct));
+        return savedProduct;
     }
 
     @Override
@@ -76,12 +83,15 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setStock(product.getStock());
         existingProduct.setActive(product.getActive());
 
-        return productDao.save(existingProduct);
+        Product savedProduct = productDao.save(existingProduct);
+        eventPublisher.publishEvent(ProductIndexEvent.index(savedProduct));
+        return savedProduct;
     }
 
     @Override
     public void deleteProduct(Long id) {
         Product existingProduct = getProductById(id);
         productDao.delete(existingProduct);
+        eventPublisher.publishEvent(ProductIndexEvent.delete(id));
     }
 }
