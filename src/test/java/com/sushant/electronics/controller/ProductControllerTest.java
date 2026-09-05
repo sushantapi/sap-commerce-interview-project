@@ -1,17 +1,18 @@
 package com.sushant.electronics.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sushant.electronics.dto.ProductData;
 import com.sushant.electronics.dto.ProductRequest;
 import com.sushant.electronics.exception.DuplicateProductException;
 import com.sushant.electronics.exception.ProductNotFoundException;
 import com.sushant.electronics.facade.ProductFacade;
+import jakarta.validation.Valid;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,8 +29,7 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final JsonMapper objectMapper = new JsonMapper();
 
     @MockitoBean
     private ProductFacade productFacade;
