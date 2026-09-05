@@ -11,5 +11,16 @@ services:
       - solr_data:/var/solr
     restart: unless-stopped
 
+  solr-schema-init:
+    image: solr:10.0.0
+    depends_on:
+      - solr
+    volumes:
+      - ./docker/solr-schema-init.sh:/opt/solr-schema-init.sh:ro
+    entrypoint:
+      - /bin/bash
+      - /opt/solr-schema-init.sh
+    restart: "no"
+
 volumes:
   solr_data:
