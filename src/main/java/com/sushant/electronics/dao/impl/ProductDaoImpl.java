@@ -3,6 +3,8 @@ package com.sushant.electronics.dao.impl;
 import com.sushant.electronics.dao.ProductDao;
 import com.sushant.electronics.entity.Product;
 import com.sushant.electronics.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -59,5 +61,11 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public void delete(Product product) {
         productRepository.delete(product);
+    }
+
+    @Override
+    public Page<Product> search(String query, Pageable pageable) {
+        return productRepository.findByCodeContainingIgnoreCaseOrNameContainingIgnoreCase(
+                query, query, pageable);
     }
 }
