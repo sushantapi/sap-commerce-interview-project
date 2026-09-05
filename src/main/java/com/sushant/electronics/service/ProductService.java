@@ -1,9 +1,10 @@
 package com.sushant.electronics.service;
 
 import com.sushant.electronics.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-
 
 /**
  * SAP Commerce:
@@ -28,4 +29,6 @@ public interface ProductService {
     Product updateProduct(Long id, Product product);
 
     void deleteProduct(Long id);
+
+    Page<Product> searchProducts(String query, Pageable pageable);
 }
