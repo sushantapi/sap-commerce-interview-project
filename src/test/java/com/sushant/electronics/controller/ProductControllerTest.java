@@ -5,7 +5,6 @@ import com.sushant.electronics.dto.ProductRequest;
 import com.sushant.electronics.exception.DuplicateProductException;
 import com.sushant.electronics.exception.ProductNotFoundException;
 import com.sushant.electronics.facade.ProductFacade;
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
