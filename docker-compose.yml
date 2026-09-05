@@ -19,7 +19,8 @@ services:
       - ./docker/solr-schema-init.sh:/opt/solr-schema-init.sh:ro
     entrypoint:
       - /bin/bash
-      - /opt/solr-schema-init.sh
+      - -c
+      - tr -d '\r' < /opt/solr-schema-init.sh | /bin/bash
     restart: "no"
 
 volumes:
