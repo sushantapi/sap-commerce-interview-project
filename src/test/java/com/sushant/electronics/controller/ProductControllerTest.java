@@ -61,7 +61,7 @@ class ProductControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.error").value("Validation Failed"));
+                .andExpect(jsonPath("$.error").value("Validation failed"));
 
         verifyNoInteractions(productFacade);
     }
