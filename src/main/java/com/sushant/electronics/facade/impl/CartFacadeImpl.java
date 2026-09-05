@@ -8,6 +8,7 @@ import com.sushant.electronics.entity.CartItem;
 import com.sushant.electronics.facade.CartFacade;
 import com.sushant.electronics.service.CartService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,16 +23,19 @@ public class CartFacadeImpl implements CartFacade {
     }
 
     @Override
+    @Transactional
     public CartData getCart(String customerId) {
         return toData(cartService.getOrCreateCart(customerId));
     }
 
     @Override
+    @Transactional
     public CartData addItem(String customerId, CartItemRequest request) {
         return toData(cartService.addItem(customerId, request.getProductId(), request.getQuantity()));
     }
 
     @Override
+    @Transactional
     public CartData updateItem(String customerId, Long productId, CartItemRequest request) {
         if (!productId.equals(request.getProductId())) {
             throw new IllegalArgumentException("Path productId and request productId must match");
@@ -40,6 +44,7 @@ public class CartFacadeImpl implements CartFacade {
     }
 
     @Override
+    @Transactional
     public CartData removeItem(String customerId, Long productId) {
         return toData(cartService.removeItem(customerId, productId));
     }
