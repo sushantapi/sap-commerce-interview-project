@@ -1,7 +1,7 @@
 -- Seed data for product search, pagination and sorting demos.
--- Product codes are unique so this script is safe for a fresh database.
+-- Uses the JPA-mapped `products` table and is safe to run on every startup.
 
-INSERT INTO product (code, name, description, price, stock, active) VALUES
+INSERT INTO products (code, name, description, price, stock, active) VALUES
 ('IPHONE-15', 'iPhone 15', 'Apple smartphone 128GB', 69999.00, 25, true),
 ('IPHONE-15-PRO', 'iPhone 15 Pro', 'Apple Pro smartphone 256GB', 129999.00, 15, true),
 ('IPHONE-15-PRO-MAX', 'iPhone 15 Pro Max', 'Apple Pro Max smartphone 256GB', 149999.00, 10, true),
@@ -41,4 +41,5 @@ INSERT INTO product (code, name, description, price, stock, active) VALUES
 ('SANDISK-1TB-SSD', 'SanDisk 1TB Portable SSD', 'Portable external solid state drive', 7999.00, 29, true),
 ('SAMSUNG-1TB-SSD', 'Samsung 1TB SSD', 'High speed NVMe solid state drive', 9999.00, 25, true),
 ('TP-LINK-AX3000', 'TP-Link AX3000 Router', 'Wi-Fi 6 dual band router', 7499.00, 31, true),
-('JBL-FLIP6', 'JBL Flip 6', 'Portable Bluetooth speaker', 11999.00, 36, true);
+('JBL-FLIP6', 'JBL Flip 6', 'Portable Bluetooth speaker', 11999.00, 36, true)
+ON CONFLICT (code) DO NOTHING;
