@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
@@ -23,13 +22,14 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Cart getOrCreateCart(String customerId) {
         return cartRepository.findByCustomerId(customerId)
                 .orElseGet(() -> cartRepository.save(Cart.builder().customerId(customerId).build()));
     }
 
     @Override
+    @Transactional
     public Cart addItem(String customerId, Long productId, Integer quantity) {
         Cart cart = getOrCreateCart(customerId);
         Product product = getProduct(productId);
@@ -58,6 +58,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public Cart updateItem(String customerId, Long productId, Integer quantity) {
         Cart cart = getExistingCart(customerId);
         Product product = getProduct(productId);
@@ -72,6 +73,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public Cart removeItem(String customerId, Long productId) {
         Cart cart = getExistingCart(customerId);
         CartItem item = findItem(cart, productId);
