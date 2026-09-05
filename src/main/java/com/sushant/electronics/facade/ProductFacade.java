@@ -2,6 +2,8 @@ package com.sushant.electronics.facade;
 
 import com.sushant.electronics.dto.ProductData;
 import com.sushant.electronics.dto.ProductRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -34,4 +36,6 @@ public interface ProductFacade {
     ProductData updateProduct(Long id, ProductRequest productRequest);
 
     void deleteProduct(Long id);
+
+    Page<ProductData> searchProducts(String query, Pageable pageable);
 }
