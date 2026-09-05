@@ -1,6 +1,8 @@
 package com.sushant.electronics.dao;
 
 import com.sushant.electronics.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,57 +22,22 @@ import java.util.Optional;
  */
 public interface ProductDao {
 
-    /**
-     * SAP Commerce:
-     * Save a ProductModel using the persistence layer.
-     *
-     * Spring Boot:
-     * Delegates to JpaRepository.save().
-     */
     Product save(Product product);
 
-    /**
-     * SAP Commerce:
-     * Retrieve ProductModel by PK.
-     *
-     * Spring Boot:
-     * Delegates to JpaRepository.findById().
-     */
     Optional<Product> findById(Long id);
 
-    /**
-     * SAP Commerce:
-     * Retrieve ProductModel using product code.
-     *
-     * Spring Boot:
-     * Equivalent query is handled by Spring Data JPA.
-     */
     Optional<Product> findByCode(String code);
 
-    /**
-     * SAP Commerce:
-     * Retrieve all products.
-     *
-     * Spring Boot:
-     * Delegates to JpaRepository.findAll().
-     */
     List<Product> findAll();
 
-    /**
-     * SAP Commerce:
-     * Check whether a product with the given code exists.
-     *
-     * Spring Boot:
-     * Delegates to Spring Data JPA existsByCode().
-     */
     boolean existsByCode(String code);
 
-    /**
-     * SAP Commerce:
-     * Delete a ProductModel.
-     *
-     * Spring Boot:
-     * Delegates to JpaRepository.delete().
-     */
     void delete(Product product);
+
+    /**
+     * Search products by code or name with database-level pagination and sorting.
+     * SAP Commerce equivalent would typically be a FlexibleSearch query with
+     * search conditions and paging handled by the search service.
+     */
+    Page<Product> search(String query, Pageable pageable);
 }
