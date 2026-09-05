@@ -2,28 +2,16 @@ package com.sushant.electronics.service.impl;
 
 import com.sushant.electronics.dao.ProductDao;
 import com.sushant.electronics.entity.Product;
+import com.sushant.electronics.exception.DuplicateProductException;
+import com.sushant.electronics.exception.ProductNotFoundException;
 import com.sushant.electronics.service.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * SAP Commerce:
- * Service Layer implementation.
- *
- * Spring Boot:
- * @Service implementation containing business logic.
- *
- * The Service Layer should not directly access the repository.
- * It communicates with the DAO layer.
- *
- * SAP Commerce flow:
- * Service -> DAO -> FlexibleSearch -> Database
- *
- * Spring Boot flow:
- * Service -> DAO -> Repository/JPA -> Database
- */
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
     private final ProductDao productDao;
@@ -32,70 +20,46 @@ public class ProductServiceImpl implements ProductService {
         this.productDao = productDao;
     }
 
-    /**
-     * SAP Commerce:
-     * Creates/saves a ProductModel through the Service Layer.
-     *
-     * Spring Boot:
-     * Delegates persistence to ProductDao.
-     */
     @Override
     public Product createProduct(Product product) {
+        if (productDao.existsByCode(product.getCode())) {
+            throw new DuplicateProductException(
+                    "Product already exists with code: " + product.getCode());
+        }
         return productDao.save(product);
     }
 
-    /**
-     * SAP Commerce:
-     * Retrieves ProductModel using its PK.
-     *
-     * Spring Boot:
-     * Delegates lookup to ProductDao.
-     */
     @Override
+    @Transactional(readOnly = true)
     public Product getProductById(Long id) {
         return productDao.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Product not found with id: " + id));
+                        new ProductNotFoundException("Product not found with id: " + id));
     }
 
-    /**
-     * SAP Commerce:
-     * Retrieves ProductModel using product code.
-     *
-     * Spring Boot:
-     * Delegates lookup to ProductDao.
-     */
     @Override
+    @Transactional(readOnly = true)
     public Product getProductByCode(String code) {
         return productDao.findByCode(code)
                 .orElseThrow(() ->
-                        new RuntimeException("Product not found with code: " + code));
+                        new ProductNotFoundException("Product not found with code: " + code));
     }
 
-    /**
-     * SAP Commerce:
-     * Retrieves products through the Service Layer.
-     *
-     * Spring Boot:
-     * Delegates to ProductDao.
-     */
     @Override
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productDao.findAll();
     }
 
-    /**
-     * SAP Commerce:
-     * Updates a ProductModel through the Service Layer.
-     *
-     * Spring Boot:
-     * Retrieves the existing entity through DAO,
-     * modifies it, and delegates persistence back to DAO.
-     */
     @Override
     public Product updateProduct(Long id, Product product) {
-
         Product existingProduct = getProductById(id);
+
+        if (!existingProduct.getCode().equals(product.getCode())
+                && productDao.existsByCode(product.getCode())) {
+            throw new DuplicateProductException(
+                    "Product already exists with code: " + product.getCode());
+        }
 
         existingProduct.setCode(product.getCode());
         existingProduct.setName(product.getName());
@@ -107,18 +71,9 @@ public class ProductServiceImpl implements ProductService {
         return productDao.save(existingProduct);
     }
 
-    /**
-     * SAP Commerce:
-     * Removes a ProductModel through the persistence layer.
-     *
-     * Spring Boot:
-     * Delegates deletion to ProductDao.
-     */
     @Override
     public void deleteProduct(Long id) {
-
         Product existingProduct = getProductById(id);
-
         productDao.delete(existingProduct);
     }
 }
