@@ -5,6 +5,8 @@ import com.sushant.electronics.entity.Product;
 import com.sushant.electronics.exception.DuplicateProductException;
 import com.sushant.electronics.exception.ProductNotFoundException;
 import com.sushant.electronics.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productDao.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> searchProducts(String query, Pageable pageable) {
+        return productDao.search(query == null ? "" : query.trim(), pageable);
     }
 
     @Override
