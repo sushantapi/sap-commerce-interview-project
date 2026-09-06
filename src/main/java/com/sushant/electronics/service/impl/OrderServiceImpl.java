@@ -5,12 +5,14 @@ import com.sushant.electronics.entity.CartItem;
 import com.sushant.electronics.entity.Order;
 import com.sushant.electronics.entity.OrderItem;
 import com.sushant.electronics.entity.OrderStatus;
+import com.sushant.electronics.event.OrderPlacedEvent;
 import com.sushant.electronics.exception.CartException;
 import com.sushant.electronics.exception.OrderException;
 import com.sushant.electronics.repository.CartRepository;
 import com.sushant.electronics.repository.OrderRepository;
 import com.sushant.electronics.repository.ProductRepository;
 import com.sushant.electronics.service.OrderService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +26,16 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CartRepository cartRepository,
-                            ProductRepository productRepository) {
+                            ProductRepository productRepository,
+                            ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -86,6 +91,9 @@ public class OrderServiceImpl implements OrderService {
 
         cart.getItems().clear();
         cartRepository.save(cart);
+
+        eventPublisher.publishEvent(
+                new OrderPlacedEvent(savedOrder.getId(), savedOrder.getCustomerId()));
 
         return savedOrder;
     }
