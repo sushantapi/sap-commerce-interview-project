@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="items.xsd">
+
+    <!-- Interview practice only.
+         This file documents the SAP Commerce type-system equivalent of the
+         Product JPA entity used by this Spring Boot project. It is not loaded
+         by Spring Boot or used to generate Java classes in this repository. -->
+
+    <itemtypes>
+        <itemtype code="Product" autocreate="true" generate="true">
+            <deployment table="Products" typecode="10001" />
+            <attributes>
+                <attribute qualifier="code" type="java.lang.String">
+                    <modifiers unique="true" optional="false" />
+                    <persistence type="property" />
+                </attribute>
+
+                <attribute qualifier="name" type="java.lang.String">
+                    <modifiers optional="false" />
+                    <persistence type="property" />
+                </attribute>
+
+                <attribute qualifier="description" type="java.lang.String">
+                    <modifiers optional="true" />
+                    <persistence type="property" />
+                </attribute>
+
+                <attribute qualifier="price" type="java.math.BigDecimal">
+                    <modifiers optional="false" />
+                    <persistence type="property" />
+                </attribute>
+
+                <attribute qualifier="stock" type="java.lang.Integer">
+                    <modifiers optional="false" />
+                    <persistence type="property" />
+                </attribute>
+
+                <attribute qualifier="active" type="java.lang.Boolean">
+                    <modifiers optional="false" />
+                    <persistence type="property" />
+                </attribute>
+            </attributes>
+        </itemtype>
+    </itemtypes>
+</items>
