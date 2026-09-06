@@ -5,13 +5,14 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-
 /**
  * SAP Commerce equivalent:
  * ProductModel
  *
  * Spring Boot implementation:
  * JPA Entity mapped to the products table.
+ *
+ * The category relation demonstrates the SAP Commerce relation concept.
  */
 @Entity
 @Table(name = "products")
@@ -43,4 +44,8 @@ public class Product {
 
     @Column(nullable = false)
     private Boolean active;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
