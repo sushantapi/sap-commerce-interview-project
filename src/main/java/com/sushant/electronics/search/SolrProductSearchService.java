@@ -127,14 +127,45 @@ public class SolrProductSearchService {
 
     private ProductData toProductData(JsonNode doc) {
         return ProductData.builder()
-                .id(doc.path("id").asLong())
-                .code(doc.path("code").asText())
-                .name(doc.path("name").asText())
-                .description(doc.path("description").isMissingNode() ? null : doc.path("description").asText())
-                .price(doc.path("price").isMissingNode() ? null : new BigDecimal(doc.path("price").asText()))
-                .stock(doc.path("stock").isMissingNode() ? null : doc.path("stock").asInt())
-                .active(doc.path("active").isMissingNode() ? null : doc.path("active").asBoolean())
+                .id(textNode(doc, "id") == null ? null : textNode(doc, "id").asLong())
+                .code(textValue(doc, "code"))
+                .name(textValue(doc, "name"))
+                .description(textValue(doc, "description"))
+                .price(decimalValue(doc, "price"))
+                .stock(integerValue(doc, "stock"))
+                .active(booleanValue(doc, "active"))
                 .build();
+    }
+
+    private JsonNode textNode(JsonNode doc, String field) {
+        JsonNode node = doc.path(field);
+        if (node.isMissingNode() || node.isNull()) {
+            return null;
+        }
+        if (node.isArray()) {
+            return node.isEmpty() ? null : node.get(0);
+        }
+        return node;
+    }
+
+    private String textValue(JsonNode doc, String field) {
+        JsonNode node = textNode(doc, field);
+        return node == null ? null : node.asText();
+    }
+
+    private BigDecimal decimalValue(JsonNode doc, String field) {
+        JsonNode node = textNode(doc, field);
+        return node == null ? null : new BigDecimal(node.asText());
+    }
+
+    private Integer integerValue(JsonNode doc, String field) {
+        JsonNode node = textNode(doc, field);
+        return node == null ? null : node.asInt();
+    }
+
+    private Boolean booleanValue(JsonNode doc, String field) {
+        JsonNode node = textNode(doc, field);
+        return node == null ? null : node.asBoolean();
     }
 
     private void sendUpdate(String path, Object body) {
