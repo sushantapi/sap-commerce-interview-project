@@ -1,0 +1,25 @@
+# SAP Commerce ImpEx interview practice
+# This file is documentation/practice data. Spring Boot does not execute ImpEx.
+
+# INSERT_UPDATE creates a new item or updates an existing item identified by the unique key.
+INSERT_UPDATE Product;
+code[unique=true];name;description;price;stock;active
+;IPHONE-17;iPhone 17;Apple smartphone;79999;50;true
+
+# UPDATE modifies an existing item. The unique key identifies the item.
+UPDATE Product;
+code[unique=true];price;stock
+;IPHONE-17;82999;45
+
+# REMOVE deletes matching items.
+REMOVE Product;
+code[unique=true]
+;IPHONE-17
+
+# INSERT creates a new item and fails if a matching unique item already exists.
+INSERT Product;
+code[unique=true];name;description;price;stock;active
+;PIXEL-10;Google Pixel 10;Google smartphone;89999;30;true
+
+# FlexibleSearch is primarily for querying Commerce data.
+# ImpEx is primarily for import/export and create/update/remove operations.
