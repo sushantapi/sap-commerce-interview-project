@@ -4,6 +4,8 @@ import com.sushant.electronics.dao.ProductDao;
 import com.sushant.electronics.entity.Product;
 import com.sushant.electronics.exception.DuplicateProductException;
 import com.sushant.electronics.exception.ProductNotFoundException;
+import com.sushant.electronics.interceptor.ProductPrepareInterceptor;
+import com.sushant.electronics.interceptor.ProductValidateInterceptor;
 import com.sushant.electronics.search.ProductIndexEvent;
 import com.sushant.electronics.service.ProductService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,19 +22,29 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductDao productDao;
     private final ApplicationEventPublisher eventPublisher;
+    private final ProductPrepareInterceptor prepareInterceptor;
+    private final ProductValidateInterceptor validateInterceptor;
 
     public ProductServiceImpl(ProductDao productDao,
-                              ApplicationEventPublisher eventPublisher) {
+                              ApplicationEventPublisher eventPublisher,
+                              ProductPrepareInterceptor prepareInterceptor,
+                              ProductValidateInterceptor validateInterceptor) {
         this.productDao = productDao;
         this.eventPublisher = eventPublisher;
+        this.prepareInterceptor = prepareInterceptor;
+        this.validateInterceptor = validateInterceptor;
     }
 
     @Override
     public Product createProduct(Product product) {
+        prepareInterceptor.prepare(product);
+        validateInterceptor.validate(product);
+
         if (productDao.existsByCode(product.getCode())) {
             throw new DuplicateProductException(
                     "Product already exists with code: " + product.getCode());
         }
+
         Product savedProduct = productDao.save(product);
         eventPublisher.publishEvent(ProductIndexEvent.index(savedProduct));
         return savedProduct;
@@ -68,6 +80,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Long id, Product product) {
+        prepareInterceptor.prepare(product);
+        validateInterceptor.validate(product);
+
         Product existingProduct = getProductById(id);
 
         if (!existingProduct.getCode().equals(product.getCode())
